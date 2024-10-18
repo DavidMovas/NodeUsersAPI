@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+    mongo:
+      image: mongo:8.0.1
+      restart: always
+      environment:
+        MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      volumes:
+        - mongo-data:/data/db
+      ports:
+        - ${MONGO_PORT}:${MONGO_PORT}
+
+    server:
+      build: .
+      ports:
+        - ${EXTERNAL_PORT}:${PORT}
+      depends_on:
+        - mongo
+      environment:
+        PORT: ${PORT}
+        MONGODB_URI: ${MONGODB_URL}
+      volumes:
+        - .:/usr/src/
+
+volumes:
+  mongo-data:
